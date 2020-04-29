@@ -46,7 +46,7 @@
     <div class="d-flex flex-column">
         <div class=" bg-light p-3">
             <h3 class="text-right">
-                <b>Total: </b> R$ 500,00
+                <b>Total: </b> R$ {{$total}}
             </h3>
         </div>
 

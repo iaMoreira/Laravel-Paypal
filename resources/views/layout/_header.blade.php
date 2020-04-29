@@ -9,7 +9,13 @@
       <li class="nav-item active">
         <a class="nav-link" href="{{route('cart')}}">
             Meu Carrinho<i class="fa fa-shopping-cart " aria-hidden="true"></i>
-            <span class="badge badge-secondary">0</span>
+            <span class="badge badge-secondary">
+                @if (session('cart'))
+                    {{session('cart')->totalItems()}}
+                @else
+                    0
+                @endif
+            </span>
         </a>
       </li>
       <li class="nav-item dropdown">

@@ -11,10 +11,11 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cart = Session::get('cart');
+        $cart =  Session::get('cart') ? Session::get('cart') : new Cart();
         $items = $cart->getItems();
+        $total = $cart->total();
         // dd($items);
-        return view('cart.index', compact('items'));
+        return view('cart.index', compact('items', 'total'));
     }
 
     public function add(Product $product)

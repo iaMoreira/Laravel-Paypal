@@ -43,4 +43,18 @@ class Cart
     {
         return $this->items;
     }
+
+    public function total()
+    {
+        $total = 0;
+        foreach($this->items as $item){
+            $total += ($item['item']->price * $item['qtd']);
+        }
+        return $total;
+    }
+
+    public function totalItems()
+    {
+        return count($this->items);
+    }
 }
