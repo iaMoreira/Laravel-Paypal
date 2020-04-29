@@ -7,28 +7,39 @@
 
     <table class="w-100 table table-bordered table-striped table-responsive">
         <thead>
-            <th>Item</th>
-            <th>Preço</th>
-            <th>Qtd.</th>
-            <th>Sub. Total</th>
+            <th class="w-50">Item</th>
+            <th style="width: 15%; text-align: center;">Preço</th>
+            <th style="width: 20%; text-align: center;">Qtd.</th>
+            <th style="width: 15%; text-align: center;">Sub. Total</th>
         </thead>
 
         <tbody>
-            <tr>
-                <td>
-                    <div class="d-flex ">
-                        <img class="img-thumbnail w-25 mr-3" src="{{asset('images/img1.jpg')}}" alt="">
-                        <h6 class="font-weight-bold ">Nome do produto</h6>
-                    </div>
-                </td>
-                <td> R$ 30,00</td>
-                <td>
-                    <a >-</a>
-                     2
-                     <a >+ </a>
-                </td>
-                <td>R$ 60,00</td>
-            </tr>
+            @forelse ($items as $item)
+                <tr>
+                    <td>
+                        <div class="d-flex ">
+                            <img class="img-thumbnail w-25 mr-3" src="{{asset($item['item']->image)}}" alt="">
+                            <div>
+                                <h5 class="font-weight-bold ">{{$item['item']->name}}</h5>
+                                <p class="font-italic text-muted">
+                                    {{$item['item']->description}}
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center"> R$ {{$item['item']->price}}</td>
+                    <td class="text-center">
+                        <a href="{{route('decrement-cart', $item['item']->id)}}" class="btn btn-danger btn-sm"> - </a>
+                        {{$item['qtd']}}
+                        <a href="{{route('add-cart', $item['item']->id)}}" class="btn btn-success btn-sm"> + </a>
+                    </td>
+                    <td class="text-center">R$ {{ $item['item']->price * $item['qtd'] }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="20"> Carrinho Vazio</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 
