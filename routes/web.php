@@ -20,4 +20,4 @@ Route::get('/decrementar-carrinho/{product}', 'CartController@decrement')->name(
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');
