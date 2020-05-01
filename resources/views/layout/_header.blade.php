@@ -9,19 +9,45 @@
       <li class="nav-item active">
         <a class="nav-link" href="{{route('cart')}}">
             Meu Carrinho<i class="fa fa-shopping-cart " aria-hidden="true"></i>
-            <span class="badge badge-secondary">0</span>
+            <span class="badge badge-secondary">
+                @if (session('cart'))
+                    {{session('cart')->totalItems()}}
+                @else
+                    0
+                @endif
+            </span>
         </a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          User
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="{{route('profile')}}">Perfil</a>
-          <a class="dropdown-item" href="">Alterar Senha</a>
-          <a class="dropdown-item" href="#">Sair</a>
-        </div>
-      </li>
+        @guest
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('login') }}">Entrar</a>
+            </li>
+            @if (Route::has('register'))
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('register') }}">Cadastra-se</a>
+                </li>
+            @endif
+        @else
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ Auth::user()->name }} <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="{{route('profile')}}">Perfil</a>
+                <a class="dropdown-item" href="">Alterar Senha</a>
+                <a class="dropdown-item" href="{{ route('logout') }}"
+                    onclick="event.preventDefault();
+                                    document.getElementById('logout-form').submit();">
+                                    Sair
+                    </a>
+
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+                </div>
+            </li>
+        @endguest
+
     </ul>
 
   </div>

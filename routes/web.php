@@ -17,3 +17,7 @@ Route::get('/carrinho', 'CartController@index')->name('cart');
 Route::get('/perfil', 'UserController@profile')->name('profile');
 Route::get('/adicionar-carrinho/{product}', 'CartController@add')->name('add-cart');
 Route::get('/decrementar-carrinho/{product}', 'CartController@decrement')->name('decrement-cart');
+
+Auth::routes();
+
+// Route::get('/home', 'HomeController@index')->name('home');
