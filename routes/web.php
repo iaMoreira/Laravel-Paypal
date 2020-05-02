@@ -20,4 +20,6 @@ Route::get('/decrementar-carrinho/{product}', 'CartController@decrement')->name(
 
 Auth::routes();
 
-// Route::get('/home', 'HomeController@index')->name('home');
+Route::get('return-paypal', 'PayPalController@returnPayPal')->name('return.paypal');
+Route::get('paypal', 'PayPalController@paypal')->name('paypal');
+

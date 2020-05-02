@@ -51,7 +51,8 @@
         </div>
 
         <div class="float-right">
-            <a class="btn btn-success text-white float-right"> Finalizar compra</a>
+            <a class="btn btn-success text-white float-right"
+                href="{{route('paypal')}}"> Finalizar compra</a>
         </div>
 
     </div>
