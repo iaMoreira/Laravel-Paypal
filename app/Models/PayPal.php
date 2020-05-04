@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Exception;
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;
 use PayPal\Api\Payment;
+use PayPal\Api\PaymentExecution;
 use PayPal\Rest\ApiContext;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
@@ -43,7 +45,16 @@ class PayPal
 
         try {
             $payment->create($this->apiContext);
-        } catch (Exception $ex) {
+
+            $paymentId = $payment->getId();
+            Order::create([
+                'user_id'   => auth()->user()->id,
+                'total'     => $this->cart->total(),
+                'status'    => 'started',
+                'payment_id'=> $paymentId,
+                'identity'  => $this->identity,
+            ]);
+        } catch (PayPalConnectionException| Exception $ex) {
             exit(1);
         }
 
@@ -60,9 +71,9 @@ class PayPal
         return $payer;
     }
 
+    // Items do carrinho
     public function items()
     {
-        // Items do carrinho
         $itemsCart =$this->cart->getItems();
         $items = [];
         foreach($itemsCart as $itemCart){
@@ -77,7 +88,7 @@ class PayPal
         return $items;
     }
 
-    public function itemsList()
+    public function itemList()
     {
         $itemList = new ItemList();
         $itemList->setItems($this->items());
@@ -108,14 +119,14 @@ class PayPal
     public function transaction()
     {
         $transaction = new Transaction();
-        $transaction->setAmount($this->amount)
-            ->setItemList($this->itemList)
+        $transaction->setAmount($this->amount())
+            ->setItemList($this->itemList())
             ->setDescription("Compra de items do carrinho.")
             ->setInvoiceNumber($this->identity);
         return $transaction;
     }
 
-    public function redirectsUrl()
+    public function redirectUrls()
     {
         $baseRoute = route('return.paypal');
         $redirectUrls = new RedirectUrls();
@@ -123,5 +134,22 @@ class PayPal
             ->setCancelUrl("{$baseRoute}?success=false");
 
         return $redirectUrls;
+    }
+
+    public function execute($paymentId, $token, $payerId)
+    {
+        $payment = Payment::get($paymentId, $this->apiContext);
+
+        if($payment->getState() != 'approved'){
+            $execution = new PaymentExecution();
+
+            $execution->setPayerId($payerId);
+
+            $result = $payment->execute($execution, $this->apiContext);
+
+            return $result->getState();
+        }
+
+        return $payment->getState();
     }
 }
