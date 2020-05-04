@@ -9,13 +9,14 @@ use Illuminate\Http\Request;
 class PayPalController extends Controller
 {
 
-    public function paypal()
+    public function paypal(Order $order)
     {
         $paypal = new PayPal();
 
         $result = $paypal->generate();
 
         if($result['status']){
+            $order->newOrdeProducts($result['totalCart'], $result['payment_id'], $result['identity'], $result['itemsCart']);
             return redirect()->away($result['url_paypal']);
         }
         return redirect()->route('cart')->with('message', 'Erro inesperado');
