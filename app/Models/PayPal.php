@@ -47,20 +47,37 @@ class PayPal
             $payment->create($this->apiContext);
 
             $paymentId = $payment->getId();
-            Order::create([
+
+            $order = Order::create([
                 'user_id'   => auth()->user()->id,
                 'total'     => $this->cart->total(),
                 'status'    => 'started',
                 'payment_id'=> $paymentId,
                 'identity'  => $this->identity,
             ]);
+
+            $items = $this->cart->getItems();
+            $productsOrder = [];
+            foreach($items as $item){
+                $productsOrder[$item['item']->id] = [
+                    'qtd'   => $item['qtd'],
+                    'price' => $item['item']->price
+                ];
+            }
+            $order->products()->attach($productsOrder);
+
+            $approvalUrl = $payment->getApprovalLink();
+
+            return [
+                'status' => true,
+                'url_paypal' => $approvalUrl
+            ];
         } catch (PayPalConnectionException| Exception $ex) {
-            exit(1);
+            return [
+                'status' => false,
+                'message' => $ex->getMessage()
+            ];
         }
-
-        $approvalUrl = $payment->getApprovalLink();
-
-        return $approvalUrl;
     }
 
     public function payer()

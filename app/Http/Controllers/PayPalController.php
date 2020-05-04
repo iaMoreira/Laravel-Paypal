@@ -13,7 +13,12 @@ class PayPalController extends Controller
     {
         $paypal = new PayPal();
 
-        return redirect()->away($paypal->generate());
+        $result = $paypal->generate();
+
+        if($result['status']){
+            return redirect()->away($result['url_paypal']);
+        }
+        return redirect()->route('cart')->with('message', 'Erro inesperado');
     }
     public function returnPayPal(Request $request, Order $order)
     {
