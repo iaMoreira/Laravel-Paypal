@@ -21,5 +21,10 @@ Route::get('/decrementar-carrinho/{product}', 'CartController@decrement')->name(
 Auth::routes();
 
 Route::get('return-paypal', 'PayPalController@returnPayPal')->name('return.paypal');
-Route::get('paypal', 'PayPalController@paypal')->name('paypal');
+
+Route::group(['middleware' => 'cart.items'], function() {
+    Route::get('paypal', 'PayPalController@paypal')->name('paypal');
+});
+
+
 

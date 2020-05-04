@@ -35,15 +35,33 @@ class PayPal
 
     public function generate()
     {
+        $payment = new Payment();
+        $payment->setIntent("order")
+            ->setPayer($this->payer())
+            ->setRedirectUrls($this->redirectUrls())
+            ->setTransactions(array($this->transaction()));
+
+        try {
+            $payment->create($this->apiContext);
+        } catch (Exception $ex) {
+            exit(1);
+        }
+
+        $approvalUrl = $payment->getApprovalLink();
+
+        return $approvalUrl;
+    }
+
+    public function payer()
+    {
         $payer = new Payer();
         $payer->setPaymentMethod("paypal");
 
-        // $item1 = new Item();
-        // $item1->setName('Ground Coffee 40 oz')
-        //     ->setCurrency('BRL')
-        //     ->setQuantity(1)
-        //     ->setPrice(7.5);
+        return $payer;
+    }
 
+    public function items()
+    {
         // Items do carrinho
         $itemsCart =$this->cart->getItems();
         $items = [];
@@ -56,51 +74,54 @@ class PayPal
             $items[] = $item;
         }
 
-        $itemList = new ItemList();
-        $itemList->setItems($items);
+        return $items;
+    }
 
+    public function itemsList()
+    {
+        $itemList = new ItemList();
+        $itemList->setItems($this->items());
+
+        return $itemList;
+    }
+
+    public function details()
+    {
         $details = new Details();
         $details
             // ->setShipping(1.2)
             // ->setTax(1.3)
             ->setSubtotal($this->cart->total());
 
+        return $details;
+    }
+
+    public function amount()
+    {
         $amount = new Amount();
         $amount->setCurrency("BRL")
             ->setTotal($this->cart->total())
-                ->setDetails($details);
+                ->setDetails($this->details());
+        return $amount;
+    }
 
+    public function transaction()
+    {
         $transaction = new Transaction();
-        $transaction->setAmount($amount)
-            ->setItemList($itemList)
+        $transaction->setAmount($this->amount)
+            ->setItemList($this->itemList)
             ->setDescription("Compra de items do carrinho.")
-            ->setInvoiceNumber($this->identity  );
+            ->setInvoiceNumber($this->identity);
+        return $transaction;
+    }
 
+    public function redirectsUrl()
+    {
         $baseRoute = route('return.paypal');
         $redirectUrls = new RedirectUrls();
         $redirectUrls->setReturnUrl("{$baseRoute}?success=true")
             ->setCancelUrl("{$baseRoute}?success=false");
 
-        $payment = new Payment();
-        $payment->setIntent("order")
-            ->setPayer($payer)
-            ->setRedirectUrls($redirectUrls)
-            ->setTransactions(array($transaction));
-
-        $request = clone $payment;
-
-        try {
-            $payment->create($this->apiContext);
-        } catch (Exception $ex) {
-            // ResultPrinter::printError("Created Payment Order Using PayPal. Please visit the URL to Approve.", "Payment", null, $request, $ex);
-            exit(1);
-        }
-
-        $approvalUrl = $payment->getApprovalLink();
-
-        // ResultPrinter::printResult("Created Payment Order Using PayPal. Please visit the URL to Approve.", "Payment", "<a href='$approvalUrl' >$approvalUrl</a>", $request, $payment);
-
-        return $approvalUrl;
-
+        return $redirectUrls;
     }
 }
