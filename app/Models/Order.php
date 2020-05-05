@@ -11,7 +11,7 @@ class Order extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, OrderProduct::class);
+        return $this->belongsToMany(Product::class, OrderProduct::class)->withPivot('qtd', 'price');
     }
 
     public function  newOrdeProducts($totalCart, $paymentId, $identity, $itemsCart)
@@ -32,5 +32,12 @@ class Order extends Model
             ];
         }
         $order->products()->attach($productsOrder);
+    }
+
+    public function changeStatus($paymentId, $status)
+    {
+        $this->where('payment_id', $paymentId)
+            ->update(['status' => $status]);
+
     }
 }

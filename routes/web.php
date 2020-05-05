@@ -21,6 +21,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/decrementar-carrinho/{product}', 'CartController@decrement')->name('decrement-cart');
     Route::get('return-paypal', 'PayPalController@returnPayPal')->name('return.paypal');
 
+    Route::get('meus-pedidos', 'StoreController@orders')->name('orders');
+    Route::get('detalhar-pedido/{order}', 'StoreController@orderDetail')->name('order.products');
     Route::group(['middleware' => 'cart.items'], function() {
         Route::get('paypal', 'PayPalController@paypal')->name('paypal');
     });
