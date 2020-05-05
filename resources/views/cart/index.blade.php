@@ -5,6 +5,11 @@
     <h1>Meu Carrinho de compras</h1>
 
 
+    @if(session('message'))
+        <div class="alert alert-warning">
+            {{session('message')}}
+        </div>
+    @endif
     <table class="w-100 table table-bordered table-striped table-responsive">
         <thead>
             <th class="w-50">Item</th>
@@ -51,7 +56,8 @@
         </div>
 
         <div class="float-right">
-            <a class="btn btn-success text-white float-right"> Finalizar compra</a>
+            <a class="btn btn-success text-white float-right"
+                href="{{route('paypal')}}"> Finalizar compra</a>
         </div>
 
     </div>

@@ -35,6 +35,7 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item" href="{{route('profile')}}">Perfil</a>
                 <a class="dropdown-item" href="">Alterar Senha</a>
+                <a class="dropdown-item" href="{{route('orders')}}">Meus Pedidos</a>
                 <a class="dropdown-item" href="{{ route('logout') }}"
                     onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">
